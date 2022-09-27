@@ -1,0 +1,100 @@
+const express = require("express");
+const morgan = require("morgan");
+const data = require("../data.json");
+const tel = require("../telefono.json");
+const app = express();
+
+// middleware
+app.use(morgan("dev"));
+app.use(express.json());
+
+port = 3000;
+
+app.get("/", (req, res) => {
+  res.send(data);
+});
+
+app.post("/", (req, res) => {
+  const id = data.length + 1;
+  const dato = req.body;
+  data.push({ ...dato, id });
+  res.send(data);
+});
+
+app.get("/test", (req, res) => {
+  const dato = tel.findIndex((ele) => ele.id == 1);
+  console.log(dato);
+  res.json(dato);
+});
+
+app.get("/:id", (req, res) => {
+  const id = req.params.id;
+  const note = data.find((user) => user.id == id);
+  if (!note) {
+    res.status(203).end();
+  }
+  res.send(note);
+});
+app.delete("/:id", (req, res) => {
+  const id = req.params.id;
+  const note = data.findIndex((user) => user.id == id);
+  data.splice(note, 1);
+  res.send("eliminado correctamente");
+});
+
+app.get("/api/persons", (req, res) => {
+  res.send(tel);
+});
+app.post("/api/persons", (req, res) => {
+  const body = req.body;
+  const name = tel.findIndex((data) => data.name == body.name);
+
+  if (body.name && body.number) {
+    if (name < 0) {
+      const id = tel.length + 1;
+      tel.push({ ...body, id });
+      res.send(tel).end;
+    } else {
+      res.send("nombre repetido");
+    }
+  } else {
+    res.send("faltan datos");
+  }
+});
+app.get("/api/persons/:id", (req, res) => {
+  const id = req.params.id;
+  const dato = tel.find((dato) => dato.id == id);
+  if (!dato) {
+    res.status(404).end();
+  }
+  res.send(dato);
+});
+app.delete("/api/persons/:id", (req, res) => {
+  const id = req.params.id;
+  const dato = tel.findIndex((dato) => dato.id == id);
+  tel.splice(dato, 1);
+  if (!dato) {
+    res.status(404).end();
+  }
+  res.status(200).end();
+});
+app.put("/api/persons/:id", (req, res) => {
+  const id = req.params.id;
+  const body = req.body;
+  const dato = tel.find((dato) => dato.id == id);
+  tel.splice(dato, 1, { ...dato, ...body });
+  if (!dato) {
+    res.status(404).end();
+  }
+  res.send(tel);
+});
+
+app.get("/api/info", (req, res) => {
+  const cantidad = tel.length;
+  const date = new Date();
+  res.send(`<p>Phonebook has info for ${cantidad} people</p><p>${date}</p>`);
+});
+
+app.listen(port, () => {
+  console.log(`http://localhost:${port}`);
+});
