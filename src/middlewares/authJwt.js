@@ -11,9 +11,12 @@ async function verifyToken(req, res, next) {
     return res.status(404).json({ message: "token no enviado" });
 
   const token = authorization.split(" ")[1];
-
-  const decode = jwt.verify(token, SECRET_WORD);
-  req.id = decode.id;
+  try {
+    const decode = jwt.verify(token, SECRET_WORD);
+    req.id = decode.id;
+  } catch (error) {
+    return next(error);
+  }
 
   const user = await User.findById(req.id, { password: 0 });
   if (!user)

@@ -35,7 +35,8 @@ async function signup(req, res) {
 async function signin(req, res) {
   const { email, password } = req.body;
 
-  const userFound = await User.findOne({ email }).populate("roles", { _id: 0 });
+  // const userFound = await User.findOne({ email }).populate("roles", { _id: 0 });
+  const userFound = await User.findOne({ email });
   const matchPassword =
     userFound == null
       ? false

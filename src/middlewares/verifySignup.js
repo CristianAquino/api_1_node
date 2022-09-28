@@ -5,7 +5,7 @@ function checkRolesExisted(req, res, next) {
   const { roles } = req.body;
   if (roles) {
     for (x of roles) {
-      if (!ROLES.includes(x.name)) {
+      if (!ROLES.includes(x)) {
         return res.json({ message: `se ingresaron roles que no existen` });
       }
     }
