@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { verifyToken, isAdmin, isModerator } = require("../middlewares/authJwt");
+const { verifyToken, isAdmin } = require("../middlewares/authJwt");
 const { checkRolesExisted } = require("../middlewares/verifySignup");
 const createUser = require("../controllers/users.controller");
 
