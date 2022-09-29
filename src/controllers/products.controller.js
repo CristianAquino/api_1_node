@@ -1,5 +1,4 @@
 const Product = require("../models/Product");
-const { uploadImage, deleteImage } = require("../libs/cloudinary");
 
 function createProducts(req, res, next) {
   const { name, category, price, imgUrl } = req.body;
@@ -54,18 +53,10 @@ function deleteProductById(req, res, next) {
     .catch((error) => next(error));
 }
 
-async function sendImage(req, res) {
-  const { image } = req.files;
-  const upload = await uploadImage(image.tempFilePath, "hola");
-  console.log(upload.url);
-  res.json({ message: "imagen guardada" });
-}
-
 module.exports = {
   getProduct,
   getProductById,
   createProducts,
   deleteProductById,
   updateProductById,
-  sendImage,
 };
