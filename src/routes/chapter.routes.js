@@ -1,11 +1,14 @@
 const router = require("express").Router();
 const { verifyImagesChapter } = require("../middlewares/verifyImage");
+const { verifyToken, isAdmin, isModerator } = require("../middlewares/authJwt");
 const {
-  getChapters,
+  getAllChapters,
   createChapters,
+  getChapterById,
 } = require("../controllers/chapter.controller");
 
-router.get("/", getChapters);
-router.post("/:id", createChapters);
+router.get("/", getAllChapters);
+router.post("/:idFolder", verifyImagesChapter, createChapters);
+router.get("/:id", getChapterById);
 
 module.exports = router;
