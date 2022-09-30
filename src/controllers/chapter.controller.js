@@ -22,19 +22,29 @@ async function createChapters(req, res) {
   const savedChapter = await newChapter.save();
   folder.chapters = folder.chapters.concat(savedChapter._id);
   await folder.save();
-  res.json(savedChapter);
+
+  res.status(200).json(savedChapter);
 }
+
 function getAllChapters(req, res) {
   Chapter.find({})
     .populate("folder", { name: 1 })
     .then((chapter) => res.status(200).json(chapter))
     .catch((error) => next(error));
 }
+
 function getChapterById(req, res) {
   const { id } = req.params;
   Chapter.findById(id)
     .populate("folder", { name: 1, _id: 0 })
-    .then((chapter) => res.status(200).json(chapter))
+    .then((chapter) => {
+      if (!chapter) {
+        return res
+          .status(404)
+          .json({ message: `No se encontro el capitulo con id: ${id}` });
+      }
+      return res.status(200).json(chapter);
+    })
     .catch((error) => next(error));
 }
 
