@@ -16,6 +16,12 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    folders: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Folder",
+      },
+    ],
     roles: [
       {
         type: Schema.Types.ObjectId,
