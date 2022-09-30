@@ -14,8 +14,17 @@ async function uploadImage(path, folder) {
   });
 }
 
-async function deleteImage(id) {
-  return await cloudinary.uploader.destroy(id);
+async function deleteFolder(public_id, folderName) {
+  await cloudinary.api.delete_resources(public_id);
+  await cloudinary.api.delete_folder(folderName);
 }
 
-module.exports = { uploadImage, deleteImage };
+async function deleteImage(public_id) {
+  await cloudinary.uploader.destroy(public_id);
+}
+
+module.exports = {
+  uploadImage,
+  deleteImage,
+  deleteFolder,
+};
