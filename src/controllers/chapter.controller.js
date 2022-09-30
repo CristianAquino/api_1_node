@@ -1,6 +1,6 @@
 const Chapter = require("../models/Chapter");
 const Folder = require("../models/Folder");
-const { uploadImage } = require("../libs/cloudinary");
+const { uploadImage, deleteImage } = require("../libs/cloudinary");
 
 async function createChapters(req, res) {
   const { idFolder } = req.params;
@@ -15,7 +15,12 @@ async function createChapters(req, res) {
 
   for (img of image) {
     let upload = await uploadImage(img.tempFilePath, folder.name);
-    newChapter.images = newChapter.images.concat(upload.url);
+    newChapter.images.url = upload.url;
+    newChapter.images.public_id = upload.public_id;
+    newChapter.images = newChapter.images.concat({
+      url: newChapter.images.url,
+      public_id: newChapter.images.public_id,
+    });
   }
   newChapter.folder = folder._id;
 
@@ -48,4 +53,28 @@ function getChapterById(req, res) {
     .catch((error) => next(error));
 }
 
-module.exports = { getAllChapters, createChapters, getChapterById };
+async function deleteChapterById(req, res) {
+  const { id } = req.params;
+  const chapter = await Chapter.findById(id);
+
+  for (img of chapter.images) {
+    await deleteImage(img.public_id);
+  }
+
+  const folder = await Folder.findById(chapter.folder);
+
+  const out = folder.chapters.findIndex((chapter) => chapter == id);
+  folder.chapters.splice(out, 1);
+
+  await folder.save();
+  await Chapter.findByIdAndDelete(id);
+
+  res.json("eliminado");
+}
+
+module.exports = {
+  getAllChapters,
+  createChapters,
+  getChapterById,
+  deleteChapterById,
+};
