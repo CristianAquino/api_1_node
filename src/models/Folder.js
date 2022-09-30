@@ -12,8 +12,8 @@ const folderSchema = new Schema(
       maxlength: 100,
     },
     image: {
-      type: String,
-      require: true,
+      url: String,
+      public_id: String,
     },
     chapters: [
       {

@@ -1,9 +1,8 @@
 const Folder = require("../models/Folder");
 const User = require("../models/User");
-const { uploadImage } = require("../libs/cloudinary");
+const { uploadImage, deleteFolder } = require("../libs/cloudinary");
 
 async function createFolders(req, res) {
-  // const { idCreator } = req.params;
   const { name, description } = req.body;
   const { image } = req.files;
 
@@ -13,12 +12,16 @@ async function createFolders(req, res) {
   const newFolder = new Folder({
     name,
     description,
-    image: upload.url,
   });
 
+  newFolder.image.url = upload.url;
+  newFolder.image.public_id = upload.public_id;
   newFolder.creator = user._id;
 
   const savedFolder = await newFolder.save();
+
+  user.folders = user.folders.concat(savedFolder._id);
+  await user.save();
 
   res.status(201).json(savedFolder);
 }
@@ -39,7 +42,7 @@ function getFolderById(req, res, next) {
     .then((folder) => {
       if (!folder) {
         return res
-          .status(401)
+          .status(404)
           .json({ message: `No se encontro el folder con id: ${id}` });
       }
       return res.status(200).json(folder);
@@ -47,4 +50,31 @@ function getFolderById(req, res, next) {
     .catch((error) => next(error));
 }
 
-module.exports = { getAllFolders, createFolders, getFolderById };
+async function deleteFolderById(req, res, next) {
+  const { id } = req.params;
+
+  const folder = await Folder.findById(id);
+
+  try {
+    await deleteFolder(folder.image.public_id, folder.name);
+  } catch (error) {
+    next(error);
+  }
+
+  const user = await User.findById(folder.creator);
+
+  const out = user.folders.findIndex((folder) => folder == id);
+  user.folders.splice(out, 1);
+
+  await user.save();
+  await Folder.findByIdAndDelete(id);
+
+  res.json("delete");
+}
+
+module.exports = {
+  getAllFolders,
+  createFolders,
+  getFolderById,
+  deleteFolderById,
+};
