@@ -13,8 +13,18 @@ async function createChapters(req, res) {
 
   const { image } = req.files;
 
-  for (img of image) {
-    let upload = await uploadImage(img.tempFilePath, folder.name);
+  if (image >= 2) {
+    for (img of image) {
+      let upload = await uploadImage(img.tempFilePath, folder.name);
+      newChapter.images.url = upload.url;
+      newChapter.images.public_id = upload.public_id;
+      newChapter.images = newChapter.images.concat({
+        url: newChapter.images.url,
+        public_id: newChapter.images.public_id,
+      });
+    }
+  } else {
+    let upload = await uploadImage(image.tempFilePath, folder.name);
     newChapter.images.url = upload.url;
     newChapter.images.public_id = upload.public_id;
     newChapter.images = newChapter.images.concat({
@@ -22,6 +32,7 @@ async function createChapters(req, res) {
       public_id: newChapter.images.public_id,
     });
   }
+
   newChapter.folder = folder._id;
 
   const savedChapter = await newChapter.save();
@@ -69,7 +80,7 @@ async function deleteChapterById(req, res) {
   await folder.save();
   await Chapter.findByIdAndDelete(id);
 
-  res.json("eliminado");
+  res.status(200).json({ message: `chapter with id: ${id} deleted` });
 }
 
 module.exports = {
