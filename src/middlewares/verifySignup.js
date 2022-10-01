@@ -9,6 +9,8 @@ function checkRolesExisted(req, res, next) {
         return res.json({ message: `se ingresaron roles que no existen` });
       }
     }
+  } else {
+    return res.json({ message: `para crear una cuenta, debe ingresar un rol` });
   }
   next();
 }
