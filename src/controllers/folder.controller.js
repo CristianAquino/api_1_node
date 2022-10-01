@@ -1,11 +1,7 @@
 const Folder = require("../models/Folder");
 const User = require("../models/User");
 const Chapter = require("../models/Chapter");
-const {
-  uploadImage,
-  deleteFolder,
-  deleteImage,
-} = require("../libs/cloudinary");
+const { uploadImage, deleteFolder } = require("../libs/cloudinary");
 
 async function createFolders(req, res) {
   const { name, description } = req.body;
@@ -59,16 +55,9 @@ async function deleteFolderById(req, res, next) {
   const { id } = req.params;
 
   const folder = await Folder.findById(id).populate("chapters");
-  const chapters = await Chapter.find({ folder: id });
 
   try {
-    for (ch of chapters) {
-      for (img of ch.images) {
-        await deleteImage(img.public_id);
-      }
-    }
-
-    await deleteFolder(folder.image.public_id, folder.name);
+    await deleteFolder(folder.name);
   } catch (error) {
     next(error);
   }
@@ -82,7 +71,7 @@ async function deleteFolderById(req, res, next) {
   await Folder.findByIdAndDelete(id);
   await Chapter.deleteMany({ folder: id });
 
-  res.json("delete");
+  res.status(200).json({ message: `folder with id: ${id} deleted` });
 }
 
 module.exports = {
