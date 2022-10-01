@@ -19,7 +19,7 @@ router.post(
 );
 router.get("/", verifyToken, getDataUser);
 // usuario comun actualiza sus datos
-router.put("/", [verifyToken], updateDataUser);
+router.put("/", verifyToken, updateDataUser);
 // admin asigna roles
 router.put("/:id", [verifyToken, isAdmin, checkRolesExisted], updateRol);
 router.delete("/:id", [verifyToken, isAdmin], deleteUserById);
