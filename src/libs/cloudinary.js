@@ -14,8 +14,8 @@ async function uploadImage(path, folder) {
   });
 }
 
-async function deleteFolder(public_id, folderName) {
-  await cloudinary.api.delete_resources(public_id);
+async function deleteFolder(folderName) {
+  await cloudinary.api.delete_resources_by_prefix(`${folderName}/`);
   await cloudinary.api.delete_folder(folderName);
 }
 
