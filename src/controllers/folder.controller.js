@@ -28,21 +28,11 @@ async function createFolders(req, res) {
 }
 
 async function getAllFolders(req, res, next) {
-  const page = req.query.page || 1;
-  // Folder.find({})
-  //   .populate("creator", { username: 1, email: 1, _id: 0 })
-  //   .populate("chapters", { name: 1, images: 1, _id: 0 })
-  //   .then((folder) => res.status(200).json(folder))
-  //   .catch((error) => next(error));
-  const folder = await Folder.paginate({}, { page }).catch((error) =>
-    next(error)
-  );
-  if (folder.docs.length == 0) {
-    return res
-      .status(404)
-      .json({ message: "pagina no encontrada o fuera de limite" });
-  }
-  res.status(200).json(folder);
+  Folder.find({})
+    .populate("creator", { username: 1, email: 1, _id: 0 })
+    .populate("chapters", { name: 1, images: 1, _id: 0 })
+    .then((folder) => res.status(200).json(folder))
+    .catch((error) => next(error));
 }
 
 function getFolderById(req, res, next) {
