@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const mongoosePaginate = require("mongoose-paginate-v2");
 
 const folderSchema = new Schema(
   {
@@ -36,6 +37,9 @@ folderSchema.set("toJSON", {
     delete returnedObject._id;
   },
 });
+
+folderSchema.index({ name: "text" });
+folderSchema.plugin(mongoosePaginate);
 
 const folder = model("Folder", folderSchema);
 module.exports = folder;

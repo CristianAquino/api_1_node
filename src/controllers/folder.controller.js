@@ -28,10 +28,21 @@ async function createFolders(req, res) {
 }
 
 async function getAllFolders(req, res, next) {
-  Folder.find({})
-    .populate("creator", { username: 1, email: 1, _id: 0 })
-    .populate("chapters", { name: 1, images: 1, _id: 0 })
-    .then((folder) => res.status(200).json(folder))
+  const page = req.query.page || 1;
+  // Folder.find({})
+  //   .populate("creator", { username: 1, email: 1, _id: 0 })
+  //   .populate("chapters", { name: 1, images: 1, _id: 0 })
+  //   .then((folder) => res.status(200).json(folder))
+  //   .catch((error) => next(error));
+  Folder.paginate({}, { page })
+    .then((folders) => {
+      if (folders.docs.length == 0) {
+        return res
+          .status(200)
+          .json({ message: "no existen folders en esta pagina" });
+      }
+      return res.status(200).json(folders);
+    })
     .catch((error) => next(error));
 }
 
@@ -39,7 +50,7 @@ function getFolderById(req, res, next) {
   const { id } = req.params;
   Folder.findById(id)
     .populate("creator", { username: 1, email: 1, _id: 0 })
-    .populate("chapters", { name: 1, images: 1, _id: 0 })
+    .populate("chapters", { name: 1, _id: 1 })
     .then((folder) => {
       if (!folder) {
         return res
