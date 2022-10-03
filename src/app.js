@@ -12,6 +12,7 @@ const authRouter = require("./routes/auth.routes");
 const userRouter = require("./routes/user.routes");
 const folderRouter = require("./routes/folder.routes");
 const chapterRouter = require("./routes/chapter.routes");
+const searchRouter = require("./routes/search.routes");
 
 const handleErrors = require("./middlewares/handleErrors");
 
@@ -33,6 +34,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/folders", folderRouter);
 app.use("/api/chapters", chapterRouter);
+app.use("/api/search", searchRouter);
 app.use(handleErrors);
 
 // exports
