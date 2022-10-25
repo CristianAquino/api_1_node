@@ -25,7 +25,9 @@ async function createUser(req, res) {
 }
 
 function getDataUser(req, res, next) {
-  User.findById(req.id)
+  User.findById(req.id, {
+    password: 0,
+  })
     .populate("folders", {
       name: 1,
       description: 1,
